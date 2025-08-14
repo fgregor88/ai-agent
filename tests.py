@@ -1,19 +1,20 @@
 # tests.py
-from functions.write_file import write_file
+from functions.run_python import run_python_file
 
 def run_tests():
-    # Test cases
     test_cases = [
-        ("calculator", "lorem.txt", "wait, this isn't lorem ipsum"),
-        ("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet"),
-        ("calculator", "/tmp/temp.txt", "this should not be allowed")
+        ("calculator", "main.py"),
+        ("calculator", "main.py", ["3 + 5"]),
+        ("calculator", "tests.py"),
+        ("calculator", "../main.py"),
+        ("calculator", "nonexistent.py")
     ]
     
-    for working_dir, file_path, content in test_cases:
-        print(f"write_file('{working_dir}', '{file_path}', '{content[:20]}...'):")
-        result = write_file(working_dir, file_path, content)
-        print(f"Result: {result}")
-        print()
+    for case in test_cases:
+        print(f"run_python_file{case}:")
+        result = run_python_file(*case)
+        print(result)
+        print("\n" + "="*50 + "\n")
 
 if __name__ == "__main__":
     run_tests()
