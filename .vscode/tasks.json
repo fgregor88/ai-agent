@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ai-agent",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "main.py",
+                "In this dir or nested dir is a file named gen.py, find it."
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "ai-agent --verbose",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "main.py",
+                "In this dir or nested dir is a file named gen.py, find it.",
+                "--verbose"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

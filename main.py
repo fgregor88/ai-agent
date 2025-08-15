@@ -56,9 +56,8 @@ def main():
 
     print(response.text)
 
-    if len(response.function_calls) > 0:
-        for function_call in response.function_calls:
-            print(f"Calling function: {function_call.name}({function_call.args})")
+    if response.function_calls is not None:
+        print(f"Calling function: {response.function_calls[0].name}({response.function_calls[0].args})")
 
     if verbose:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
