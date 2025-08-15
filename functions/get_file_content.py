@@ -1,6 +1,7 @@
 # functions/get_file_content.py
 import os
 from functions.config import MAX_FILE_SIZE
+from google.genai import types
 
 def get_file_content(working_directory, file_path):
     try:
@@ -30,3 +31,18 @@ def get_file_content(working_directory, file_path):
     
     except Exception as e:
         return f'Error: {str(e)}'
+
+schema_get_file_content=types.FunctionDeclaration(
+    name="get_file_content",
+    description="Gets file content. The content is truncated to MAX_FILE_SIZE which is defined in functions/config.py file. Ensures that the file is inside the working directory for security.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Relative path to the string. Must be insdie the working directory."
+            )
+        },
+        required=["file_path"]
+    )
+)
