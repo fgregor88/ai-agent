@@ -3,10 +3,9 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import sys
-from functions.get_files_info import schema_get_files_info
-from functions.write_file import schema_write_file
-from functions.get_file_content import schema_get_file_content
-from functions.run_python import schema_run_python_file
+from functions.schemas import available_functions
+from functions.call_function import call_function
+
 
 def main():
     print("Hello from ai-agent!")
@@ -36,15 +35,6 @@ def main():
     All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
     """
 
-    available_functions = types.Tool(
-        function_declarations=[
-            schema_get_files_info,
-            schema_write_file,
-            schema_get_file_content,
-            schema_run_python_file
-        ]
-    )
-
     response = client.models.generate_content(
         model = model,
         contents = messages,
@@ -54,16 +44,25 @@ def main():
             )
     )
 
-    print(response.text)
+    if response.function_calls:
+        for function_call_part in response.function_calls:
+            function_call_result = call_function(function_call_part, verbose=verbose)
+            
+            if not function_call_result.parts[0].function_response.response:
+                raise RuntimeError("Fatal: function call returned no response.")
+            
+            if verbose:
+                print(f"-> {function_call_result.parts[0].function_response.response}")
+    else:
+        # No function calls, just print the model's text response
+        print(response.text)
 
-    if response.function_calls is not None:
-        print(f"Calling function: {response.function_calls[0].name}({response.function_calls[0].args})")
+
 
     if verbose:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
 
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-
 
 if __name__ == "__main__":
     main()
