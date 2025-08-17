@@ -35,28 +35,35 @@ def main():
     All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
     """
 
-    response = client.models.generate_content(
-        model = model,
-        contents = messages,
-        config = types.GenerateContentConfig(
-            tools=[available_functions],
-            system_instruction=system_prompt
-            )
-    )
+    for i in range(20): 
+        response = client.models.generate_content(
+            model = model,
+            contents = messages,
+            config = types.GenerateContentConfig(
+                tools=[available_functions],
+                system_instruction=system_prompt
+                )
+        )
 
-    if response.function_calls:
-        for function_call_part in response.function_calls:
-            function_call_result = call_function(function_call_part, verbose=verbose)
-            
-            if not function_call_result.parts[0].function_response.response:
-                raise RuntimeError("Fatal: function call returned no response.")
-            
-            if verbose:
-                print(f"-> {function_call_result.parts[0].function_response.response}")
-    else:
-        # No function calls, just print the model's text response
-        print(response.text)
+        if response.function_calls:
+            for function_call_part in response.function_calls:
+                function_call_result = call_function(function_call_part, verbose=verbose)
 
+                if not function_call_result.parts[0].function_response.response:
+                    raise RuntimeError("Fatal: function call returned no response.")
+
+                if verbose:
+                    print(f"-> {function_call_result.parts[0].function_response.response}")
+
+            messages.append(types.Content(
+                role="user",
+                parts=[types.Part(text=function_call_result.parts[0].function_response.response)]
+            ))
+
+        else:
+            # No function calls, just print the model's text response
+            print(response.text)
+            break
 
 
     if verbose:
