@@ -57,7 +57,7 @@ def main():
 
             messages.append(types.Content(
                 role="user",
-                parts=[types.Part(text=function_call_result.parts[0].function_response.response)]
+                parts=[types.Part(text=f"{function_call_result.parts[0].function_response.response}")]
             ))
 
         else:
